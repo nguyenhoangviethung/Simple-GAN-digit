@@ -7,7 +7,7 @@ batch_size = 128
 
 
 transform = transforms.Compose([
-    transforms.ToTensor,
+    transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])
 ])
 
@@ -31,4 +31,4 @@ def load_MNIST_data(root='./data', transform=transform):
     return train_loader, test_loader
 
 if __name__ == "__main__":
-    print(load_MNIST_data())
+    load_MNIST_data()

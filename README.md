@@ -1,1 +1,1 @@
-# Simple-GAN-digit.py
+# Simple-GAN-digit
