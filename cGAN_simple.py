@@ -173,7 +173,7 @@ class CGAN:
         torch.save(self.G.state_dict(), os.path.join(self.out_dir, "G_latest.pth"))
         torch.save(self.D.state_dict(), os.path.join(self.out_dir, "D_latest.pth"))
 
-    def generate(self, digit=0, n_samples=16, out_path="sample.png", load_model_if_missing=True):
+    def generate(self, digit=0, n_samples=16, out_path="sample.png", load_model_if_missing=True, save_img=False):
         if load_model_if_missing:
             ckpt = os.path.join(self.out_dir, "G_latest.pth")
             if os.path.exists(ckpt):
@@ -185,9 +185,16 @@ class CGAN:
         labels = torch.full((n_samples,), digit, dtype=torch.long, device=self.device)
         with torch.no_grad():
             imgs = self.G(z, labels)
-        save_image(imgs.cpu(), out_path, nrow=4, normalize=True)
-        print(f"Saved samples of digit {digit} to {out_path}")
-
+            
+        if save_img:
+            save_image(imgs.cpu(), out_path, nrow=4, normalize=True)
+            print(f"Saved samples of digit {digit} to {out_path}")
+        imgs = (imgs + 1) / 2.0           
+        imgs = (imgs * 255).clamp(0, 255)  
+        imgs = imgs.byte().cpu().numpy()
+        
+        imgs_cv2 = imgs.squeeze(1)  
+        return imgs_cv2
 
 if __name__ == "__main__":
     cgan = CGAN(lr_d=1.5e-4, lr_g=1e-4, epochs=50)
